@@ -10,10 +10,10 @@ public class FirePokemon extends Pokemon {
 
     private static final List<String> attacks = Arrays.asList("inferno", "pyroBall", "fireLash", "flameThrower");
 
-    private static  List<String> outputlines = new ArrayList<>();
+    private static List<String> outputlines = new ArrayList<>();
 
     public FirePokemon(String name, int level, int hp, String food, String sound) {
-        super(name, hp, level, food, sound, type);
+        super(name, level, hp, food, sound, type);
 
     }
 
@@ -26,7 +26,10 @@ public class FirePokemon extends Pokemon {
     }
 
     public Textlines inferno(Pokemon name, Pokemon enemy) {
+        outputlines.removeAll(outputlines);
+
         outputlines.add(name.getName() + " performed Inferno on " + enemy.getName());
+
         switch (enemy.getType()) {
             case "fire":
                 outputlines.add(enemy.getName() + " loses 15 hp");
@@ -50,6 +53,8 @@ public class FirePokemon extends Pokemon {
     }
 
     public Textlines pyroBall(Pokemon name, Pokemon enemy) {
+        outputlines.removeAll(outputlines);
+
         outputlines.add(name.getName() + " throws a PyroBall on " + enemy.getName());
         switch (enemy.getType()) {
             case "fire":
@@ -74,6 +79,8 @@ public class FirePokemon extends Pokemon {
     }
 
     public Textlines fireLash(Pokemon name, Pokemon enemy) {
+        outputlines.removeAll(outputlines);
+
         outputlines.add(name.getName() + " hits " + enemy.getName() + " with FireLash");
         switch (enemy.getType()) {
             case "fire":
@@ -98,6 +105,8 @@ public class FirePokemon extends Pokemon {
     }
 
     public Textlines flameThrower(Pokemon name, Pokemon enemy) {
+        outputlines.removeAll(outputlines);
+
         outputlines.add(name.getName() + " hits " + enemy.getName() + " with FlameThrower");
         switch (enemy.getType()) {
             case "fire":

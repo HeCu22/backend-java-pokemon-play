@@ -1,10 +1,14 @@
 package nl.novi.backendjavapokemonplay.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+
+import java.util.List;
 
 //@Table(name = "pokemonplay")
 
 @Entity
+@Table(name = "pokemon_play")
 public class PokemonPlay {
 
     @Id
@@ -40,6 +44,12 @@ public class PokemonPlay {
 
     public PokemonPlay() {
     }
+
+    // Dit is de target kant van de relatie. Er staat niks in de database
+  ////  @OneToMany(mappedBy = "pokemon_play")
+ //   @JsonIgnore
+  //  List<PokemonCards> pokemon_cards;
+
 
     public Long getId() {
         return id;

@@ -12,7 +12,7 @@ public class ElectricPokemon extends Pokemon {
     private static List<String> outputlines = new ArrayList<>();
 
     public ElectricPokemon(String name, int level, int hp, String food, String sound) {
-        super(name, hp, level, food, sound, type);
+        super(name, level, hp, food, sound, type);
 
 
     }
@@ -27,6 +27,7 @@ public class ElectricPokemon extends Pokemon {
 
 
     public Textlines thunderPunch(Pokemon name, Pokemon enemy) {
+        outputlines.removeAll(outputlines);
 
         outputlines.add(name.getName() + " hits " + enemy.getName() + " with a ThunderPunch!");
         switch (enemy.getType()) {
@@ -55,6 +56,8 @@ public class ElectricPokemon extends Pokemon {
     }
 
     public Textlines electroBall(Pokemon name, Pokemon enemy) {
+        outputlines.removeAll(outputlines);
+
         outputlines.add(name.getName() + " throws a ElectroBall on " + enemy.getName());
         switch (enemy.getType()) {
             case "fire":
@@ -81,6 +84,8 @@ public class ElectricPokemon extends Pokemon {
     }
 
     public Textlines thunder(Pokemon name, Pokemon enemy) {
+        outputlines.removeAll(outputlines);
+
         outputlines.add(name.getName() + " hits " + enemy.getName() + " with Thunder");
         switch (enemy.getType()) {
             case "fire":
@@ -108,7 +113,10 @@ public class ElectricPokemon extends Pokemon {
     }
 
     public Textlines voltTackle(Pokemon name, Pokemon enemy) {
+        outputlines.removeAll(outputlines);
+
         outputlines.add(name.getName() + " uses a VoltTackle on " + enemy.getName());
+
         switch (enemy.getType()) {
             case "fire":
                 outputlines.add(enemy.getName() + " loses 20 hp");

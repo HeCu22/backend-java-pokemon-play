@@ -11,10 +11,10 @@ public abstract class Pokemon {
 
     private final String type;
 
-    public Pokemon(String name, int hp, int level, String food, String sound, String type) {
+    public Pokemon(String name, int level, int hp, String food, String sound, String type) {
         this.name = name;
-        this.hp = hp;
         this.level = level;
+        this.hp = hp;
         this.food = food;
         this.sound = sound;
         this.type = type;

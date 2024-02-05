@@ -11,8 +11,10 @@ public class WaterPokemon extends Pokemon {
 
     private static List<String> outputlines = new ArrayList<>();
 
+
+
     public WaterPokemon(String name, int level, int hp, String food, String sound) {
-        super(name, hp, level, food, sound, type);
+        super(name, level, hp, food, sound, type);
     }
 
     public String getType() {
@@ -23,7 +25,10 @@ public class WaterPokemon extends Pokemon {
         return attacks;
     }
 
+
     public Textlines surf(Pokemon name, Pokemon enemy) {
+        outputlines.removeAll(outputlines);
+
         outputlines.add(name.getName() + " performed surf attack on " + enemy.getName());
         switch (enemy.getType()) {
             case "grass":
@@ -52,6 +57,8 @@ public class WaterPokemon extends Pokemon {
     }
 
     public Textlines hydroPump(Pokemon name, Pokemon enemy) {
+        outputlines.removeAll(outputlines);
+
         outputlines.add(name.getName() + " performed hydro-pump on " + enemy.getName());
         switch (enemy.getType()) {
             case "grass":
@@ -80,6 +87,9 @@ public class WaterPokemon extends Pokemon {
     }
 
     public Textlines hydroCanon(Pokemon name, Pokemon enemy) {
+
+        outputlines.removeAll(outputlines);
+
         outputlines.add(name.getName() + " performed hydro-canon on " + enemy.getName());
         switch (enemy.getType()) {
             case "grass":
@@ -108,6 +118,9 @@ public class WaterPokemon extends Pokemon {
     }
 
     public Textlines rainDance(Pokemon name, Pokemon enemy) {
+
+        if (!outputlines.isEmpty()) {outputlines.removeAll(outputlines);}
+
         outputlines.add(name.getName() + " performed rain-dance " + enemy.getName());
         switch (enemy.getType()) {
             case "water":

@@ -38,8 +38,9 @@ public class PokemonPlayController {
     }
 
     @PutMapping("{name}")
-    public ResponseEntity<PokemonPlayDto> updatePokemonPlay(@PathVariable("name") String pokemonPlayName, @RequestBody PokemonPlayDto updatPokemonplay) {
-        PokemonPlayDto pokemonPlayDto = pokemonPlayService.updatePokemonPlay(pokemonPlayName, updatPokemonplay);
+    public ResponseEntity<PokemonPlayDto> updatePokemonPlay(@PathVariable("name") String pokemonPlayName, @RequestBody PokemonPlayDto updatedPokemonplay) {
+
+        PokemonPlayDto pokemonPlayDto = pokemonPlayService.updatePokemonPlay(pokemonPlayName, updatedPokemonplay);
         return ResponseEntity.ok(pokemonPlayDto);
     }
 

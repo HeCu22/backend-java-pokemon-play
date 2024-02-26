@@ -1,5 +1,11 @@
 package nl.novi.backendjavapokemonplay.entity;
 
+import nl.novi.backendjavapokemonplay.dto.TextlinesDto;
+import nl.novi.backendjavapokemonplay.mapper.TextlinesMapper;
+import nl.novi.backendjavapokemonplay.service.TextlinesService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -11,10 +17,12 @@ public class WaterPokemon extends Pokemon {
 
     private static List<String> outputlines = new ArrayList<>();
 
+    private TextlinesService textlinesService;
 
 
     public WaterPokemon(String name, int level, int hp, String food, String sound) {
         super(name, level, hp, food, sound, type);
+        this.textlinesService = textlinesService;
     }
 
     public String getType() {
@@ -26,7 +34,7 @@ public class WaterPokemon extends Pokemon {
     }
 
 
-    public Textlines surf(Pokemon name, Pokemon enemy) {
+    public List<String> surf(Pokemon name, Pokemon enemy) {
         outputlines.removeAll(outputlines);
 
         outputlines.add(name.getName() + " performed surf attack on " + enemy.getName());
@@ -52,11 +60,18 @@ public class WaterPokemon extends Pokemon {
                 break;
 
         }
+
         outputlines.add(enemy.getName() + " has " + enemy.getHp() + " hp left");
-        return new Textlines(outputlines);
+
+//        for (int i = 0; i < outputlines.size(); i++) {
+//            Textlines newtextlines = new Textlines();
+//            newtextlines.setTextline(outputlines.get(i));
+//            TextlinesDto textlinesDto = textlinesService.addTextline(TextlinesMapper.mapToTextlinesDto(newtextlines));
+//        }
+        return outputlines;
     }
 
-    public Textlines hydroPump(Pokemon name, Pokemon enemy) {
+    public List<String> hydroPump(Pokemon name, Pokemon enemy) {
         outputlines.removeAll(outputlines);
 
         outputlines.add(name.getName() + " performed hydro-pump on " + enemy.getName());
@@ -82,11 +97,14 @@ public class WaterPokemon extends Pokemon {
                 break;
 
         }
+
         outputlines.add(enemy.getName() + " has " + enemy.getHp() + " hp left");
-        return new Textlines(outputlines);
+
+        return outputlines;
+
     }
 
-    public Textlines hydroCanon(Pokemon name, Pokemon enemy) {
+    public List<String> hydroCanon(Pokemon name, Pokemon enemy) {
 
         outputlines.removeAll(outputlines);
 
@@ -114,12 +132,15 @@ public class WaterPokemon extends Pokemon {
 
         }
         outputlines.add(enemy.getName() + " has " + enemy.getHp() + " hp left");
-        return new Textlines(outputlines);
+        return outputlines;
+
     }
 
-    public Textlines rainDance(Pokemon name, Pokemon enemy) {
+    public List<String> rainDance(Pokemon name, Pokemon enemy) {
 
-        if (!outputlines.isEmpty()) {outputlines.removeAll(outputlines);}
+        if (!outputlines.isEmpty()) {
+            outputlines.removeAll(outputlines);
+        }
 
         outputlines.add(name.getName() + " performed rain-dance " + enemy.getName());
         switch (enemy.getType()) {
@@ -144,8 +165,12 @@ public class WaterPokemon extends Pokemon {
                 break;
 
         }
+
         outputlines.add(enemy.getName() + " has " + enemy.getHp() + " hp left");
-        return new Textlines(outputlines);
+
+        return outputlines;
+
+
     }
 
 }

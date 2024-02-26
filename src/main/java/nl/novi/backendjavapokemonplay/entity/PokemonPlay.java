@@ -5,32 +5,33 @@ import jakarta.persistence.*;
 
 import java.util.List;
 
-//@Table(name = "pokemonplay")
-
 @Entity
 @Table(name = "pokemon_play")
 public class PokemonPlay {
 
     @Id
     @GeneratedValue
-         (strategy = GenerationType.IDENTITY)
+            (strategy = GenerationType.IDENTITY)
     private Long id;
-@Column(name = "a name player A", nullable = false, unique = true)
+    @Column(name = "a name player A", nullable = false, unique = true)
     private String namePlayerA;
 
-@Column(name = "b card Player A")
+    @Column(name = "b card Player A")
     private String cardPlayerA;
 
-@Column(name = "c name gym owner")
+    @Column(name = "c name gym owner")
     private String nameGymOwner;
 
-@Column(name = "d card gym owner")
+    @Column(name = "d card gym owner")
     private String cardGymOwner;
 
- @Column(name = "e used pokemon")
+    @Column(name = "e used pokemon")
     private String usedPokemon;
 
 
+    @OneToMany(mappedBy = "pokemonplay")
+    @JsonIgnore
+    private List<Textlines> textlines;
 
 
     public PokemonPlay(Long id, String namePlayerA, String cardPlayerA, String nameGymOwner, String cardGymOwner, String usedPokemon) {
@@ -44,11 +45,6 @@ public class PokemonPlay {
 
     public PokemonPlay() {
     }
-
-    // Dit is de target kant van de relatie. Er staat niks in de database
-  ////  @OneToMany(mappedBy = "pokemon_play")
- //   @JsonIgnore
-  //  List<PokemonCards> pokemon_cards;
 
 
     public Long getId() {
@@ -75,12 +71,18 @@ public class PokemonPlay {
         return usedPokemon;
     }
 
+    public List<Textlines> getTextlines() {
+        return textlines;
+    }
+
     public void setId(Long id) {
         this.id = id;
     }
 
+
     public void setNamePlayerA(String namePlayerA) {
         this.namePlayerA = namePlayerA;
+
     }
 
     public void setCardPlayerA(String cardPlayerA) {
@@ -95,7 +97,11 @@ public class PokemonPlay {
         this.cardGymOwner = cardGymOwner;
     }
 
-    public void setUsedPokemon( String usedPokemon) {
+    public void setUsedPokemon(String usedPokemon) {
         this.usedPokemon = usedPokemon;
+    }
+
+    public void setTextlines(List<Textlines> textlines) {
+        this.textlines = textlines;
     }
 }

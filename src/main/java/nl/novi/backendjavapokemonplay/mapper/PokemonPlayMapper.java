@@ -16,7 +16,7 @@ public class PokemonPlayMapper {
     }
 
 
-    public static PokemonPlay mapToPokemonPlay (PokemonPlayDto pokemonPlayDto) {
+    public static PokemonPlay mapToPokemonPlay(PokemonPlayDto pokemonPlayDto) {
         return new PokemonPlay(
                 pokemonPlayDto.getId(),
                 pokemonPlayDto.getNamePlayerA(),

@@ -16,7 +16,7 @@ public interface PokemonGym {
 
     Pokemon selectPokemon(String pokemon, PokemonTrainer trainer);
 
-    Textlines fightRound(PokemonTrainer trainer, PokemonGymOwner owner, Pokemon pokemon, Pokemon gymPokemon);
+    void fightRound(PokemonPlayDto pokemonPlayDto);
 
 
     Pokemon chooseGymPokemon(PokemonGymOwner gymOwner);
@@ -25,19 +25,21 @@ public interface PokemonGym {
 
     int randomAttackByGymOwner();
 
-    Textlines chooseAttackPlayer(Pokemon p);
+    List<String> chooseAttackPlayer(Pokemon p);
 
-    Textlines performAttack(String attack, PokemonPlayDto pokemonPlayDto);
+    void performAttack(String attack, PokemonPlayDto pokemonPlayDto);
 
-    Textlines performAttackPlayer(Pokemon pokemon, Pokemon gymPokemon, String attack);
+    List<String> performAttackPlayer(Pokemon pokemon, Pokemon gymPokemon, String attack);
 
-    Textlines gymOwnerAttacks(Pokemon gymPokemon, Pokemon pokemon);
+    List<String> gymOwnerAttacks(Pokemon gymPokemon, Pokemon pokemon);
 
-    Textlines attackOrChange(String choice, Pokemon pokemon, Pokemon gymPokemon, PokemonTrainer trainer, PokemonGymOwner gym);
-
-
-    Textlines enterFight(PokemonPlayDto pokemonPlayDto);
+    void attackOrChange(String choice, Pokemon pokemon, Pokemon gymPokemon, PokemonTrainer trainer, PokemonGymOwner gym);
 
 
-    Textlines fightRoundNext(PokemonPlayDto pokemonPlayDto);
+    void enterFight(PokemonPlayDto pokemonPlayDto);
+
+
+    void fightRoundNext(PokemonPlayDto pokemonPlayDto);
+
+    // PokemonPlayDto getPokemonPlayByName(String pokemonPlayName);
 }

@@ -1,25 +1,55 @@
 package nl.novi.backendjavapokemonplay.entity;
 
-import java.util.Arrays;
-import java.util.List;
+import jakarta.persistence.*;
 
+
+@Entity
+@Table(name = "textlines")
 public class Textlines {
 
-    private List<String> textlines;
+    @Id
+    @GeneratedValue
+    private Long id;
 
-    public Textlines (List<String> textlines) {
-       this.textlines = textlines;
+    @Column
+    private String textline;
+
+    @ManyToOne
+    @JoinColumn(name = "pokemonplay_id")
+    public PokemonPlay pokemonplay;
+
+    public Textlines(Long id, String textline, PokemonPlay pokemonplay) {
+    this.id = id;
+    this.textline = textline;
+    this.pokemonplay = pokemonplay;
+
     }
 
-  //  public Long getId() {return id; }
+    public Textlines (){};
 
-    public List<String> getTextlines() {
-        return textlines;
+    public Long getId() {
+        return id;
     }
 
-  //  public void setId(Long id) {this.id = id;    }
+    public String getTextline() {
+        return textline;
+    }
 
-    public void setTextlines(List<String> textlines) {
-        this.textlines = textlines;
+    public PokemonPlay getPokemonplay() {
+        return pokemonplay;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setTextline(String textline) {
+        this.textline = textline;
+    }
+
+    public void setPokemonplay(PokemonPlay pokemonplay) {
+        this.pokemonplay = pokemonplay;
     }
 }
+
+

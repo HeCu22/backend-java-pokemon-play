@@ -3,11 +3,9 @@ package nl.novi.backendjavapokemonplay.controller;
 import nl.novi.backendjavapokemonplay.dto.PokemonPlayDto;
 import nl.novi.backendjavapokemonplay.entity.*;
 import nl.novi.backendjavapokemonplay.service.PokemonGym;
-import nl.novi.backendjavapokemonplay.service.PokemonPlayService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
 import java.util.List;
 
 @CrossOrigin("*")
@@ -30,28 +28,27 @@ public class PokemonGymController {
 
     @GetMapping("/entercard/{name}")
     public ResponseEntity<List<Pokemon>> enterCardByName(@PathVariable("name") String namePlayerA) {
-            PokemonTrainer playerA = new PokemonTrainer(namePlayerA, null);
+        PokemonTrainer playerA = new PokemonTrainer(namePlayerA, null);
         List<Pokemon> pokemonplayenteredthegym = pokemonGym.enterCard(playerA);
         return ResponseEntity.ok(pokemonplayenteredthegym);
     }
 
     @PutMapping("/enterfight/{id}")
-    public ResponseEntity<Textlines> enterFight(@PathVariable("id")  Long pokemonPlayId, @RequestBody PokemonPlayDto pokemonPlayDto) {
+    public ResponseEntity<PokemonPlayDto> enterFight(@PathVariable("id") Long pokemonPlayId, @RequestBody PokemonPlayDto pokemonPlayDto) {
 
-       Textlines textlinesToReturn = pokemonGym.enterFight(pokemonPlayDto);
-            return ResponseEntity.ok(textlinesToReturn);
+        pokemonGym.enterFight(pokemonPlayDto);
+        return ResponseEntity.ok(pokemonPlayDto);
     }
 
     @PutMapping("/nextround/{answer}")
-    public ResponseEntity<Textlines> fightRoundNext(@PathVariable("answer")  String answer, @RequestBody PokemonPlayDto pokemonPlayDto) {
+    public ResponseEntity<PokemonPlayDto> fightRoundNext(@PathVariable("answer") String answer, @RequestBody PokemonPlayDto pokemonPlayDto) {
         Textlines textlinesToReturn;
         if (answer.equals("a")) {
-         textlinesToReturn = pokemonGym.fightRoundNext(pokemonPlayDto);}
-        else {
-            textlinesToReturn = pokemonGym.performAttack(answer, pokemonPlayDto);
+            pokemonGym.fightRoundNext(pokemonPlayDto);
+        } else {
+            pokemonGym.performAttack(answer, pokemonPlayDto);
         }
-
-        return ResponseEntity.ok(textlinesToReturn);
+        return ResponseEntity.ok(pokemonPlayDto);
     }
 
 }

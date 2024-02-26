@@ -5,7 +5,6 @@ import nl.novi.backendjavapokemonplay.entity.Pokemon;
 import nl.novi.backendjavapokemonplay.entity.PokemonTrainer;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 
 @Service
 public interface PokemonPlayService {

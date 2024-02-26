@@ -1,5 +1,12 @@
 package nl.novi.backendjavapokemonplay.entity;
 
+import nl.novi.backendjavapokemonplay.dto.TextlinesDto;
+import nl.novi.backendjavapokemonplay.mapper.TextlinesMapper;
+import nl.novi.backendjavapokemonplay.service.TextlinesService;
+import nl.novi.backendjavapokemonplay.service.impl.TextlinesServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -12,8 +19,12 @@ public class FirePokemon extends Pokemon {
 
     private static List<String> outputlines = new ArrayList<>();
 
+
+    private TextlinesService textlinesService;
+
     public FirePokemon(String name, int level, int hp, String food, String sound) {
         super(name, level, hp, food, sound, type);
+        this.textlinesService = textlinesService;
 
     }
 
@@ -25,7 +36,7 @@ public class FirePokemon extends Pokemon {
         return attacks;
     }
 
-    public Textlines inferno(Pokemon name, Pokemon enemy) {
+    public List<String> inferno(Pokemon name, Pokemon enemy) {
         outputlines.removeAll(outputlines);
 
         outputlines.add(name.getName() + " performed Inferno on " + enemy.getName());
@@ -49,10 +60,16 @@ public class FirePokemon extends Pokemon {
                 break;
         }
         outputlines.add(enemy.getName() + " has " + enemy.getHp() + " hp left");
-        return new Textlines(outputlines);
+//        for (int i = 0; i < outputlines.size(); i++) {
+//            Textlines newtextlines = new Textlines();
+//            newtextlines.setTextline(outputlines.get(i));
+//            TextlinesDto textlinesDto = textlinesService.addTextline(TextlinesMapper.mapToTextlinesDto(newtextlines));
+//        }
+
+        return outputlines;
     }
 
-    public Textlines pyroBall(Pokemon name, Pokemon enemy) {
+    public List<String> pyroBall(Pokemon name, Pokemon enemy) {
         outputlines.removeAll(outputlines);
 
         outputlines.add(name.getName() + " throws a PyroBall on " + enemy.getName());
@@ -75,10 +92,16 @@ public class FirePokemon extends Pokemon {
                 break;
         }
         outputlines.add(enemy.getName() + " has " + enemy.getHp() + " hp left");
-        return new Textlines(outputlines);
+//        for (int i = 0; i < outputlines.size(); i++) {
+//            Textlines newtextlines = new Textlines();
+//            newtextlines.setTextline(outputlines.get(i));
+//            TextlinesDto textlinesDto = textlinesService.addTextline(TextlinesMapper.mapToTextlinesDto(newtextlines));
+//        }
+
+        return outputlines;
     }
 
-    public Textlines fireLash(Pokemon name, Pokemon enemy) {
+    public List<String> fireLash(Pokemon name, Pokemon enemy) {
         outputlines.removeAll(outputlines);
 
         outputlines.add(name.getName() + " hits " + enemy.getName() + " with FireLash");
@@ -101,10 +124,12 @@ public class FirePokemon extends Pokemon {
                 break;
         }
         outputlines.add(enemy.getName() + " has " + enemy.getHp() + " hp left");
-        return new Textlines(outputlines);
+
+        return outputlines;
+
     }
 
-    public Textlines flameThrower(Pokemon name, Pokemon enemy) {
+    public List<String> flameThrower(Pokemon name, Pokemon enemy) {
         outputlines.removeAll(outputlines);
 
         outputlines.add(name.getName() + " hits " + enemy.getName() + " with FlameThrower");
@@ -128,7 +153,13 @@ public class FirePokemon extends Pokemon {
                 break;
         }
         outputlines.add(enemy.getName() + " has " + enemy.getHp() + " hp left");
-        return new Textlines(outputlines);
+//        for (int i = 0; i < outputlines.size(); i++) {
+//            Textlines newtextlines = new Textlines();
+//            newtextlines.setTextline(outputlines.get(i));
+//            TextlinesDto textlinesDto = textlinesService.addTextline(TextlinesMapper.mapToTextlinesDto(newtextlines));
+//        }
+        return outputlines;
+
     }
 
 

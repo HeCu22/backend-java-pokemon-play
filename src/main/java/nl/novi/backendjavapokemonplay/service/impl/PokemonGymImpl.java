@@ -1,10 +1,18 @@
 package nl.novi.backendjavapokemonplay.service.impl;
 
 import nl.novi.backendjavapokemonplay.dto.PokemonPlayDto;
+import nl.novi.backendjavapokemonplay.dto.TextlinesDto;
 import nl.novi.backendjavapokemonplay.entity.*;
+
 import nl.novi.backendjavapokemonplay.mapper.PokemonPlayMapper;
+import nl.novi.backendjavapokemonplay.mapper.TextlinesMapper;
+import nl.novi.backendjavapokemonplay.repository.PokemonPlayRepo;
+import nl.novi.backendjavapokemonplay.repository.TextlinesRepo;
 import nl.novi.backendjavapokemonplay.service.PokemonGym;
 
+import nl.novi.backendjavapokemonplay.service.PokemonPlayService;
+import nl.novi.backendjavapokemonplay.service.TextlinesService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -23,11 +31,44 @@ public class PokemonGymImpl implements PokemonGym {
     private static final WaterPokemon gyarados = new WaterPokemon("Gyarados", 90, 180, "Pokeflakes", "Gyaaaaaaaaarrrraaaadoooos");
 
     private static List<Pokemon> pokemons = Arrays.asList(charizard, blastoise, venusaur, ditto, raichu, gyarados);
+    private TextlinesRepo textlinesRepo;
 
-    String choice = "";
+    @Autowired
+    private TextlinesService textlinesService;
+    private PokemonPlayService pokemonPlayService;
+    private PokemonPlayRepo pokemonPlayRepo;
+    private PokemonGymImpl pokemonGym;
 
-    public PokemonGymImpl(List<Pokemon> pokemons) {
+    public PokemonGymImpl(List<Pokemon> pokemons,
+                          PokemonPlayRepo pokemonPlayRepo,
+                          PokemonPlayService pokemonPlayService,
+                          TextlinesRepo textlinesRepo,
+                          TextlinesService textlinesService) {
+
         PokemonGymImpl.pokemons = pokemons;
+        this.pokemonPlayRepo = pokemonPlayRepo;
+        this.pokemonPlayService = pokemonPlayService;
+        this.textlinesRepo = textlinesRepo;
+        this.textlinesService = textlinesService;
+    }
+
+    public PokemonPlayService getPokemonPlayService() {
+        return pokemonPlayService;
+    }
+
+    public PokemonPlayRepo getPokemonPlayRepo() {
+        return pokemonPlayRepo;
+    }
+
+    public TextlinesRepo getTextlinesRepo() {
+        return textlinesRepo;
+    }
+
+    public TextlinesService getTextlinesService() {
+        return textlinesService;
+    }
+
+    public PokemonGymImpl() {
     }
 
 
@@ -43,11 +84,15 @@ public class PokemonGymImpl implements PokemonGym {
         pokemons = Arrays.asList(charizard, blastoise, venusaur, ditto, raichu, gyarados);
         PokemonGymOwner gymOwner = new PokemonGymOwner("Brock", "Pewter City", pokemons);
         Pokemon gymPokemon = chooseGymPokemon(gymOwner);
-        PokemonPlay pokemonplayentered = new PokemonPlay();
-        pokemonplayentered.setNamePlayerA(player1.getName());
-        pokemonplayentered.setNameGymOwner(gymOwner.getName());
-        pokemonplayentered.setCardGymOwner(gymPokemon.getName());
-        return PokemonPlayMapper.mapToPokemonPlayDto(pokemonplayentered);
+        Textlines newtextlines = new Textlines();
+        PokemonPlayDto dto = new PokemonPlayDto();
+        String playerName = player1.getName();
+        dto = textlinesService.getPokemonPlayByName(playerName);
+        dto.setNamePlayerA(playerName);
+        dto.setNameGymOwner(gymOwner.getName());
+        dto.setCardGymOwner(gymPokemon.getName());
+
+        return dto;
 
 
     }
@@ -60,23 +105,23 @@ public class PokemonGymImpl implements PokemonGym {
         return choosePokemon(playerA);
     }
 
+    ;
+
     @Override
     public void printPokemon(List<Pokemon> pokemons) {
 
     }
 
+    ;
+
     @Override
-    public Textlines enterFight(PokemonPlayDto pokemonPlayDto) {
-        pokemons = Arrays.asList(charizard, blastoise, venusaur, ditto, raichu, gyarados);
-        PokemonTrainer playerA = new PokemonTrainer(pokemonPlayDto.getNamePlayerA(), pokemons);
-        PokemonGymOwner gymowner = new PokemonGymOwner("Brock", "Pewter City", pokemons);
-        Pokemon cardA = selectPokemon(pokemonPlayDto.getCardPlayerA(), playerA);
-        Pokemon cardGymOwner = selectPokemon(pokemonPlayDto.getCardGymOwner(), gymowner);
-        Textlines textlines;
-        textlines = fightRound(playerA, gymowner, cardA, cardGymOwner);
-        return textlines;
+    public void enterFight(PokemonPlayDto pokemonPlayDto) {
+
+        fightRound(pokemonPlayDto);
     }
 
+    ;
+//
 
     @Override
     public Pokemon selectPokemon(String pokemon, PokemonTrainer trainer) {
@@ -90,43 +135,52 @@ public class PokemonGymImpl implements PokemonGym {
         return pokemons.get(number);
     }
 
+
     @Override
-    public Textlines fightRound(PokemonTrainer trainer, PokemonGymOwner owner, Pokemon pokemon, Pokemon gymPokemon) {
+    public void fightRound(PokemonPlayDto pokemonPlayDto) {
         pokemons = Arrays.asList(charizard, blastoise, venusaur, ditto, raichu, gyarados);
-        PokemonTrainer playerA = new PokemonTrainer(trainer.getName(), pokemons);
+
+        PokemonTrainer playerA = new PokemonTrainer(pokemonPlayDto.getNamePlayerA(), pokemons);
         PokemonGymOwner gymowner = new PokemonGymOwner("Brock", "Pewter City", pokemons);
-        final Pokemon cardA = selectPokemon(pokemon.getName(), playerA);
-        Pokemon cardGymOwner = selectPokemon(gymPokemon.getName(), gymowner);
+        final Pokemon cardA = selectPokemon(pokemonPlayDto.getCardPlayerA(), playerA);
+        Pokemon cardGymOwner = selectPokemon(pokemonPlayDto.getCardGymOwner(), gymowner);
 
         boolean continueLoop = true;
         List<String> outputlines = new ArrayList<>();
         Textlines textlinesToReturn;
-        while (continueLoop && pokemon.getHp() > 0 && gymPokemon.getHp() > 0) {
-            outputlines.add(pokemon.getName() + " starts with " + pokemon.getHp() + " and " +
-                    gymowner.getName() + " has " + gymPokemon.getHp());
-            outputlines.add("Its " + owner.getName() + "'s turn to attack");
-            textlinesToReturn = gymOwnerAttacks(cardGymOwner, cardA);
-            outputlines.addAll(textlinesToReturn.getTextlines());
-            outputlines.add("Its " + trainer.getName() + "'s turn to attack");
-            outputlines.add("Do you want to attack or change your pokemon?");
+        while (continueLoop && cardA.getHp() > 0 && cardGymOwner.getHp() > 0) {
+            outputlines.add(cardA.getName() + " starts with " + cardA.getHp() + " and " +
+                    gymowner.getName() + " has " + cardGymOwner.getHp());
+            outputlines.add("Its " + gymowner.getName() + "'s turn to attack");
+            outputlines.addAll(gymOwnerAttacks(cardGymOwner, cardA));
+
+            outputlines.add("Its " + playerA.getName() + "'s turn to attack");
+            outputlines.add("Attack or change your pokemon?");
             outputlines.add("Type a for attack or c for change");
             continueLoop = false;
         }
         if (continueLoop) {
-            if (pokemon.getHp() <= 0) {
-                outputlines.add(gymPokemon.getName() + " has defeated " + pokemon.getName());
-            } else if (gymPokemon.getHp() <= 0) {
-                outputlines.add(pokemon.getName() + " has defeated " + gymPokemon.getName());
+            if (cardA.getHp() <= 0) {
+                outputlines.add(cardGymOwner.getName() + " has defeated " + cardA.getName());
+            } else if (cardGymOwner.getHp() <= 0) {
+                outputlines.add(cardA.getName() + " has defeated " + cardGymOwner.getName());
             }
             outputlines.add("Would you like to keep playing?");
             outputlines.add("enter yes or no");
         }
-        return new Textlines(outputlines);
+        PokemonPlayDto dto = new PokemonPlayDto();
+        dto = textlinesService.getPokemonPlayByName(playerA.getName());
+        for (int i = 0; i < outputlines.size(); i++) {
+            Textlines newtextlines = new Textlines();
+            newtextlines.setTextline(outputlines.get(i));
+            newtextlines.pokemonplay = PokemonPlayMapper.mapToPokemonPlay(dto);
+            TextlinesDto textlinesDto = textlinesService.addTextline(TextlinesMapper.mapToTextlinesDto(newtextlines));
+        }
     }
 
 
     @Override
-    public Textlines fightRoundNext(PokemonPlayDto pokemonPlayDto) {
+    public void fightRoundNext(PokemonPlayDto pokemonPlayDto) {
         pokemons = Arrays.asList(charizard, blastoise, venusaur, ditto, raichu, gyarados);
         PokemonTrainer playerA = new PokemonTrainer(pokemonPlayDto.getNamePlayerA(), pokemons);
         PokemonGymOwner gymowner = new PokemonGymOwner("Brock", "Pewter City", pokemons);
@@ -137,8 +191,8 @@ public class PokemonGymImpl implements PokemonGym {
         Textlines textlinesToReturn;
 
         while (continueLoop && pokemon.getHp() > 0 && gymPokemon.getHp() > 0) {
-            textlinesToReturn = chooseAttackPlayer(pokemon);
-            outputlines.addAll(textlinesToReturn.getTextlines());
+            outputlines.addAll(chooseAttackPlayer(pokemon));
+
             continueLoop = false;
         }
         if (continueLoop) {
@@ -151,13 +205,20 @@ public class PokemonGymImpl implements PokemonGym {
             outputlines.add("enter yes or no");
         }
 
-        //      return fightRound(playerA, gymowner, pokemon, gymPokemon);
 
-        return new Textlines(outputlines);
+        PokemonPlayDto dto = new PokemonPlayDto();
+        dto = textlinesService.getPokemonPlayByName(playerA.getName());
+        for (int i = 0; i < outputlines.size(); i++) {
+            Textlines newtextlines = new Textlines();
+            newtextlines.setTextline(outputlines.get(i));
+            newtextlines.pokemonplay = PokemonPlayMapper.mapToPokemonPlay(dto);
+            TextlinesDto textlinesDto = textlinesService.addTextline(TextlinesMapper.mapToTextlinesDto(newtextlines));
+        }
+
     }
 
     @Override
-    public Textlines performAttack(String attack, PokemonPlayDto pokemonPlayDto) {
+    public void performAttack(String attack, PokemonPlayDto pokemonPlayDto) {
         pokemons = Arrays.asList(charizard, blastoise, venusaur, ditto, raichu, gyarados);
         PokemonTrainer playerA = new PokemonTrainer(pokemonPlayDto.getNamePlayerA(), pokemons);
         PokemonGymOwner gymowner = new PokemonGymOwner("Brock", "Pewter City", pokemons);
@@ -170,12 +231,12 @@ public class PokemonGymImpl implements PokemonGym {
         while (continueLoop && pokemon.getHp() > 0 && gymPokemon.getHp() > 0) {
             outputlines.add(pokemon.getName() + " starts with " + pokemon.getHp() + " and " +
                     gymPokemon.getName() + " has " + gymPokemon.getHp());
-            textlinesToReturn = performAttackPlayer(pokemon, gymPokemon, attack);
-            outputlines.addAll(textlinesToReturn.getTextlines());
+            outputlines = performAttackPlayer(pokemon, gymPokemon, attack);
+
 
             outputlines.add("Its " + gymowner.getName() + "'s turn to attack");
-            textlinesToReturn = gymOwnerAttacks(gymPokemon, pokemon);
-            outputlines.addAll(textlinesToReturn.getTextlines());
+            outputlines.addAll(gymOwnerAttacks(gymPokemon, pokemon));
+
 
             continueLoop = false;
         }
@@ -189,10 +250,16 @@ public class PokemonGymImpl implements PokemonGym {
             outputlines.add(pokemon.getName() + " has defeated " + gymPokemon.getName());
         }
         outputlines.add("Its " + playerA.getName() + "'s turn to attack");
-        outputlines.add("Do you want to attack or change your pokemon?");
+        outputlines.add("Attack or change your pokemon?");
         outputlines.add("Type a for attack or c for change");
-
-        return new Textlines(outputlines);
+        PokemonPlayDto dto = new PokemonPlayDto();
+        dto = textlinesService.getPokemonPlayByName(playerA.getName());
+        for (int i = 0; i < outputlines.size(); i++) {
+            Textlines newtextlines = new Textlines();
+            newtextlines.setTextline(outputlines.get(i));
+            newtextlines.pokemonplay = PokemonPlayMapper.mapToPokemonPlay(dto);
+            TextlinesDto textlinesDto = textlinesService.addTextline(TextlinesMapper.mapToTextlinesDto(newtextlines));
+        }
     }
 
 
@@ -232,7 +299,7 @@ public class PokemonGymImpl implements PokemonGym {
     }
 
     @Override
-    public Textlines chooseAttackPlayer(Pokemon p) {
+    public List<String> chooseAttackPlayer(Pokemon p) {
         List<String> outputlines = new ArrayList<>();
         String type = p.getType();
         switch (type) {
@@ -241,14 +308,14 @@ public class PokemonGymImpl implements PokemonGym {
                 outputlines.addAll(fp.getAttacks());
                 outputlines.add("Choose your attack");
                 outputlines.add("choose one of the values in list");
-                return new Textlines(outputlines);
+                break;
             }
             case "water": {
                 WaterPokemon wp = (WaterPokemon) p;
                 outputlines.addAll(wp.getAttacks());
                 outputlines.add("Choose your attack");
                 outputlines.add("choose one of the values in list");
-                return new Textlines(outputlines);
+                break;
             }
             case "electric": {
                 ElectricPokemon ep = (ElectricPokemon) p;
@@ -256,22 +323,24 @@ public class PokemonGymImpl implements PokemonGym {
                 outputlines.addAll(ep.getAttacks());
                 outputlines.add("Choose your attack");
                 outputlines.add("choose one of the values in list");
-                return new Textlines(outputlines);
+                break;
             }
             default: {
                 GrassPokemon gp = (GrassPokemon) p;
                 outputlines.addAll(gp.getAttacks());
                 outputlines.add("Choose your attack");
                 outputlines.add("choose one of the values in list");
-                return new Textlines(outputlines);
+
 
             }
         }
 
+        return outputlines;
     }
 
+
     @Override
-    public Textlines performAttackPlayer(Pokemon playPokemon, Pokemon gymPokemon, String attack) {
+    public List<String> performAttackPlayer(Pokemon playPokemon, Pokemon gymPokemon, String attack) {
         FirePokemon fire;
         ElectricPokemon electric;
         GrassPokemon grass;
@@ -287,20 +356,16 @@ public class PokemonGymImpl implements PokemonGym {
                 fire = new FirePokemon(playPokemon.getName(), playPokemon.getLevel(), playPokemon.getHp(), playPokemon.getFood(), playPokemon.getSound());
                 switch (choosenAttack) {
                     case "inferno":
-                        textlinesToReturn = fire.inferno(playPokemon, gymPokemon);
-                        outputlines.addAll(textlinesToReturn.getTextlines());
+                        outputlines = fire.inferno(playPokemon, gymPokemon);
                         break;
                     case "pyroball":
-                        textlinesToReturn = fire.pyroBall(playPokemon, gymPokemon);
-                        outputlines.addAll(textlinesToReturn.getTextlines());
+                        outputlines = fire.pyroBall(playPokemon, gymPokemon);
                         break;
                     case "firelash":
-                        textlinesToReturn = fire.fireLash(playPokemon, gymPokemon);
-                        outputlines.addAll(textlinesToReturn.getTextlines());
+                        outputlines = fire.fireLash(playPokemon, gymPokemon);
                         break;
                     default:
-                        textlinesToReturn = fire.flameThrower(playPokemon, gymPokemon);
-                        outputlines.addAll(textlinesToReturn.getTextlines());
+                        outputlines = fire.flameThrower(playPokemon, gymPokemon);
                 }
                 break;
             }
@@ -308,20 +373,19 @@ public class PokemonGymImpl implements PokemonGym {
                 water = new WaterPokemon(playPokemon.getName(), playPokemon.getLevel(), playPokemon.getHp(), playPokemon.getFood(), playPokemon.getSound());
                 switch (choosenAttack) {
                     case "surf":
-                        textlinesToReturn = water.surf(playPokemon, gymPokemon);
-                        outputlines.addAll(textlinesToReturn.getTextlines());
+                        outputlines = water.surf(playPokemon, gymPokemon);
                         break;
                     case "hydropump":
-                        textlinesToReturn = water.hydroPump(playPokemon, gymPokemon);
-                        outputlines.addAll(textlinesToReturn.getTextlines());
+                        outputlines = water.hydroPump(playPokemon, gymPokemon);
+
                         break;
                     case "hydrocanon":
-                        textlinesToReturn = water.hydroCanon(playPokemon, gymPokemon);
-                        outputlines.addAll(textlinesToReturn.getTextlines());
+                        outputlines = water.hydroCanon(playPokemon, gymPokemon);
+
                         break;
                     default:
-                        textlinesToReturn = water.rainDance(playPokemon, gymPokemon);
-                        outputlines.addAll(textlinesToReturn.getTextlines());
+                        outputlines = water.rainDance(playPokemon, gymPokemon);
+
                 }
                 break;
             }
@@ -329,21 +393,21 @@ public class PokemonGymImpl implements PokemonGym {
                 grass = new GrassPokemon(playPokemon.getName(), playPokemon.getLevel(), playPokemon.getHp(), playPokemon.getFood(), playPokemon.getSound());
                 switch (choosenAttack) {
                     case "leafstorm":
-                        textlinesToReturn = grass.leafStorm(playPokemon, gymPokemon);
-                        outputlines.addAll(textlinesToReturn.getTextlines());
+                        outputlines = grass.leafStorm(playPokemon, gymPokemon);
+
                         break;
                     case "solarbeam":
-                        textlinesToReturn = grass.solarBeam(playPokemon, gymPokemon);
-                        outputlines.addAll(textlinesToReturn.getTextlines());
+                        outputlines = grass.solarBeam(playPokemon, gymPokemon);
+
                         break;
                     case "leechseed":
-                        textlinesToReturn = grass.leechSeed(playPokemon, gymPokemon);
-                        outputlines.addAll(textlinesToReturn.getTextlines());
+                        outputlines = grass.leechSeed(playPokemon, gymPokemon);
+
                         break;
                     default:
 
-                        textlinesToReturn = grass.leaveBlade(playPokemon, gymPokemon);
-                        outputlines.addAll(textlinesToReturn.getTextlines());
+                        outputlines = grass.leaveBlade(playPokemon, gymPokemon);
+
                 }
                 break;
             }
@@ -351,30 +415,34 @@ public class PokemonGymImpl implements PokemonGym {
                 electric = new ElectricPokemon(playPokemon.getName(), playPokemon.getLevel(), playPokemon.getHp(), playPokemon.getFood(), playPokemon.getSound());
                 switch (choosenAttack) {
                     case "thunderpunch":
-                        textlinesToReturn = electric.thunderPunch(playPokemon, gymPokemon);
+                        outputlines = electric.thunderPunch(playPokemon, gymPokemon);
 
-                        outputlines.addAll(textlinesToReturn.getTextlines());
                         break;
                     case "electroball":
-                        textlinesToReturn = electric.electroBall(playPokemon, gymPokemon);
-                        outputlines.addAll(textlinesToReturn.getTextlines());
+                        outputlines = electric.electroBall(playPokemon, gymPokemon);
+
                         break;
                     case "thunder":
-                        textlinesToReturn = electric.thunder(playPokemon, gymPokemon);
-                        outputlines.addAll(textlinesToReturn.getTextlines());
+                        outputlines = electric.thunder(playPokemon, gymPokemon);
+
                         break;
                     default:
-                        textlinesToReturn = electric.voltTackle(playPokemon, gymPokemon);
-                        outputlines.addAll(textlinesToReturn.getTextlines());
+                        outputlines = electric.voltTackle(playPokemon, gymPokemon);
+
                 }
             }
             break;
         }
-        return new Textlines(outputlines);
+
+
+        return outputlines;
+
+
     }
 
+
     @Override
-    public Textlines gymOwnerAttacks(Pokemon gymPokemon, Pokemon playPokemon) {
+    public List<String> gymOwnerAttacks(Pokemon gymPokemon, Pokemon playPokemon) {
         FirePokemon fire;
         ElectricPokemon electric;
         GrassPokemon grass;
@@ -383,23 +451,6 @@ public class PokemonGymImpl implements PokemonGym {
         List<String> outputlines = new ArrayList<>();
         Textlines textlinesToReturn;
         int hp = playPokemon.getHp();
-//        switch (playPokemon.getType()) {
-//            case "fire": {
-//                Pokemon pokemonsave = new FirePokemon(playPokemon.getName(), playPokemon.getLevel(), hp, playPokemon.getFood(), playPokemon.getSound());
-//                break;
-//            }
-//            case "water": {
-//                Pokemon pokemonsave = new WaterPokemon(playPokemon.getName(), playPokemon.getLevel(), hp, playPokemon.getFood(), playPokemon.getSound());
-//                break;
-//            }
-//            case "electric": {
-//                Pokemon pokemonsave = new ElectricPokemon(playPokemon.getName(), playPokemon.getLevel(), hp, playPokemon.getFood(), playPokemon.getSound());
-//                break;
-//            }
-//            default:
-//                Pokemon pokemonsave = new GrassPokemon(playPokemon.getName(), playPokemon.getLevel(), hp, playPokemon.getFood(), playPokemon.getSound());
-//
-//        }
 
 
         switch (gymPokemon.getType()) {
@@ -409,137 +460,54 @@ public class PokemonGymImpl implements PokemonGym {
                 List<String> attacks = fire.getAttacks();
                 String attack = attacks.get(randomAttackByGymOwner());
                 playPokemon.setHp(hp);
-                textlinesToReturn = performAttackPlayer(gymPokemon, playPokemon, attack);
-                outputlines.addAll(textlinesToReturn.getTextlines());
+                outputlines = performAttackPlayer(gymPokemon, playPokemon, attack);
+
                 break;
-//            /* */   switch (attack) {
-                //      case "inferno":
-                //        textlinesToReturn = fire.inferno(gymPokemon, playPokemon);
-                //      outputlines.addAll(textlinesToReturn.getTextlines());
-//                break;
-                //              case "pyroBall":
-                //                textlinesToReturn = fire.pyroBall(gymPokemon, playPokemon);
-                //              outputlines.addAll(textlinesToReturn.getTextlines());
-                //            break;
-//                case "fireLash":
-                //                  textlinesToReturn = fire.fireLash(gymPokemon, playPokemon);
-                //                outputlines.addAll(textlinesToReturn.getTextlines());
-                //              break;
-                //        default:
-                //          textlinesToReturn = fire.flameThrower(gymPokemon, playPokemon);
-                //        outputlines.addAll(textlinesToReturn.getTextlines());
-//            }
-                //          break;
+
             }
             case "water": {
                 water = new WaterPokemon(gymPokemon.getName(), gymPokemon.getLevel(), gymPokemon.getHp(), gymPokemon.getFood(), gymPokemon.getSound());
                 List<String> attacks = water.getAttacks();
                 String attack = attacks.get(randomAttackByGymOwner());
                 playPokemon.setHp(hp);
-                textlinesToReturn = performAttackPlayer(gymPokemon, playPokemon, attack);
-                outputlines.addAll(textlinesToReturn.getTextlines());
+                outputlines = performAttackPlayer(gymPokemon, playPokemon, attack);
+
                 break;
-//                switch (attack) {
-//                    case "surf":
-//                        textlinesToReturn = water.surf(gymPokemon, playPokemon);
-//                        outputlines.addAll(textlinesToReturn.getTextlines());
-//                        break;
-//                    case "hydroPump":
-//                        textlinesToReturn = water.hydroPump(gymPokemon, playPokemon);
-//                        outputlines.addAll(textlinesToReturn.getTextlines());
-//                        break;
-//                    case "hydroCanon":
-//                        textlinesToReturn = water.hydroCanon(gymPokemon, playPokemon);
-//                        outputlines.addAll(textlinesToReturn.getTextlines());
-//                        break;
-//                    default:
-//                        textlinesToReturn = water.rainDance(gymPokemon, playPokemon);
-//                        outputlines.addAll(textlinesToReturn.getTextlines());
-//                }
-//                break;
             }
+
             case "grass": {
                 grass = new GrassPokemon(gymPokemon.getName(), gymPokemon.getLevel(), gymPokemon.getHp(), gymPokemon.getFood(), gymPokemon.getSound());
                 List<String> attacks = grass.getAttacks();
                 String attack = attacks.get(randomAttackByGymOwner());
                 playPokemon.setHp(hp);
-                textlinesToReturn = performAttackPlayer(gymPokemon, playPokemon, attack);
-                outputlines.addAll(textlinesToReturn.getTextlines());
+                outputlines = performAttackPlayer(gymPokemon, playPokemon, attack);
+
                 break;
-//                switch (attack) {
-//                    case "leafStorm":
-//                        textlinesToReturn = grass.leafStorm(gymPokemon, playPokemon);
-//                        outputlines.addAll(textlinesToReturn.getTextlines());
-//                        break;
-//                    case "solarBeam":
-//                        textlinesToReturn = grass.solarBeam(gymPokemon, playPokemon);
-//                        outputlines.addAll(textlinesToReturn.getTextlines());
-//                        break;
-//                    case "leechSeed":
-//                        textlinesToReturn = grass.leechSeed(gymPokemon, playPokemon);
-//                        outputlines.addAll(textlinesToReturn.getTextlines());
-//                        break;
-//                    default:
-//                        textlinesToReturn = grass.leaveBlade(gymPokemon, playPokemon);
-//                        outputlines.addAll(textlinesToReturn.getTextlines());
-//                }
-//                break;
+
             }
             default: {
                 electric = new ElectricPokemon(gymPokemon.getName(), gymPokemon.getLevel(), gymPokemon.getHp(), gymPokemon.getFood(), gymPokemon.getSound());
                 List<String> attacks = electric.getAttacks();
                 String attack = attacks.get(randomAttackByGymOwner());
                 playPokemon.setHp(hp);
-                textlinesToReturn = performAttackPlayer(gymPokemon, playPokemon, attack);
-                outputlines.addAll(textlinesToReturn.getTextlines());
-                break;
-//                switch (attack) {
-//                    case "thunderPunch":
-//                        textlinesToReturn = electric.thunderPunch(gymPokemon, playPokemon);
-//                        outputlines.addAll(textlinesToReturn.getTextlines());
-//                        break;
-//                    case "electroBall":
-//                        textlinesToReturn = electric.electroBall(gymPokemon, playPokemon);
-//                        outputlines.addAll(textlinesToReturn.getTextlines());
-//                        break;
-//                    case "thunder":
-//                        textlinesToReturn = electric.thunder(gymPokemon, playPokemon);
-//                        outputlines.addAll(textlinesToReturn.getTextlines());
-//                        break;
-//                    default:
-//                        textlinesToReturn = electric.voltTackle(gymPokemon, playPokemon);
-//                        outputlines.addAll(textlinesToReturn.getTextlines());
-            }
-        }
+                outputlines = performAttackPlayer(gymPokemon, playPokemon, attack);
 
-        return new Textlines(outputlines);
+                break;
+
+
+
+
+            }
+
+        }
+        return outputlines;
     }
 
-
     @Override
-    public Textlines attackOrChange(String choice, Pokemon pokemon, Pokemon gymPokemon, PokemonTrainer trainer, PokemonGymOwner gym) {
-        List<String> outputlines = new ArrayList<>();
-        Textlines textlinesToReturn;
+    public void attackOrChange(String choice, Pokemon pokemon, Pokemon gymPokemon, PokemonTrainer trainer, PokemonGymOwner gym) {
 
-        outputlines.add("Do you want to attack or change your pokemon?");
-        outputlines.add("Type a for attack or c for change");
-//        String choice = speler_A.nextLine();
-
-        if (choice.equalsIgnoreCase("a")) {
-            textlinesToReturn = chooseAttackPlayer(pokemon);
-            outputlines.addAll(textlinesToReturn.getTextlines());
-            String attack = outputlines.get(0);
-            textlinesToReturn = performAttackPlayer(pokemon, gymPokemon, attack);
-            outputlines.addAll(textlinesToReturn.getTextlines());
-
-        } else {
-            List<Pokemon> pokemonList = choosePokemon(trainer);
-            pokemon = pokemonList.get(0);
-            //         attackOrChange(pokemon, gymPokemon, trainer, gym);
-            textlinesToReturn = fightRound(trainer, gym, pokemon, gymPokemon);
-            outputlines.addAll(textlinesToReturn.getTextlines());
-        }
-        return new Textlines(outputlines);
     }
 
 }
+
+
